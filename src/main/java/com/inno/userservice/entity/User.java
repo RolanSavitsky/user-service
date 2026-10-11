@@ -16,6 +16,8 @@ import java.util.List;
 @NoArgsConstructor
 public class User extends BaseEntity {
 
+    public static final int MAX_CARDS = 5;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,4 +39,12 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<PaymentCard> cards = new ArrayList<>();
+
+    public void addCard(PaymentCard card){
+        if (cards.size() >= MAX_CARDS){
+            throw new IllegalStateException("User already has " + MAX_CARDS + " cards");
+        }
+        cards.add(card);
+        card.setUser(this);
+    }
 }
