@@ -1,6 +1,7 @@
 package com.inno.userservice.repository;
 
 import com.inno.userservice.entity.PaymentCard;
+import com.inno.userservice.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -11,6 +12,15 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface PaymentCardRepository extends JpaRepository<PaymentCard, Long>, JpaSpecificationExecutor<PaymentCard> {
+
+    long countByUserId(Long UserId);
+
+    default PaymentCard saveWithLimit(PaymentCard card){
+        if (countByUserId(card.getUser().getId()) >= User.MAX_CARDS){
+            throw new IllegalStateException("User already has " + User.MAX_CARDS + " cards");
+        }
+        return save(card);
+    }
 
     List<PaymentCard> findAllByUserId(Long userId);
 
