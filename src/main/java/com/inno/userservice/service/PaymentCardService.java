@@ -3,11 +3,11 @@ package com.inno.userservice.service;
 import com.inno.userservice.dto.PaymentCardDto;
 import com.inno.userservice.entity.PaymentCard;
 import com.inno.userservice.entity.User;
+import com.inno.userservice.exception.NotFoundException;
 import com.inno.userservice.mapper.PaymentCardMapper;
 import com.inno.userservice.repository.PaymentCardRepository;
 import com.inno.userservice.repository.UserRepository;
 import com.inno.userservice.specification.PaymentCardSpecification;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +26,7 @@ public class PaymentCardService {
 
     public PaymentCardDto create(PaymentCardDto paymentCardDto) {
         User owner = userRepository.findById(paymentCardDto.getUserId())
-                .orElseThrow(() -> new EntityNotFoundException("User not found: " + paymentCardDto.getUserId()));
+                .orElseThrow(() -> new NotFoundException("User not found: " + paymentCardDto.getUserId()));
 
         PaymentCard paymentCard = paymentCardMapper.toEntity(paymentCardDto);
         paymentCard.setUser(owner);
@@ -36,7 +36,7 @@ public class PaymentCardService {
 
     public PaymentCardDto getById(Long id) {
         PaymentCard paymentCard = paymentCardRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Payment card not found: " + id));
+                .orElseThrow(() -> new NotFoundException("Payment card not found: " + id));
 
         return paymentCardMapper.toDto(paymentCard);
     }
@@ -60,7 +60,7 @@ public class PaymentCardService {
                 paymentCardDto.getHolder(), paymentCardDto.getExpirationDate());
 
         if (updated == 0) {
-            throw new EntityNotFoundException("Payment card not found: " + id);
+            throw new NotFoundException("Payment card not found: " + id);
         }
 
         return getById(id);
@@ -69,14 +69,14 @@ public class PaymentCardService {
     @Transactional
     public void activate(Long id) {
         if (paymentCardRepository.updateActiveById(id, true) == 0) {
-            throw new EntityNotFoundException("Payment card not found: " + id);
+            throw new NotFoundException("Payment card not found: " + id);
         }
     }
 
     @Transactional
     public void deactivate(Long id) {
         if (paymentCardRepository.updateActiveById(id, false) == 0) {
-            throw new EntityNotFoundException("Payment card not found: " + id);
+            throw new NotFoundException("Payment card not found: " + id);
         }
     }
 }
