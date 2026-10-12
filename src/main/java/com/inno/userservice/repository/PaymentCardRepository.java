@@ -2,6 +2,7 @@ package com.inno.userservice.repository;
 
 import com.inno.userservice.entity.PaymentCard;
 import com.inno.userservice.entity.User;
+import com.inno.userservice.exception.CardLimitExceededException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -15,9 +16,9 @@ public interface PaymentCardRepository extends JpaRepository<PaymentCard, Long>,
 
     long countByUserId(Long UserId);
 
-    default PaymentCard saveWithLimit(PaymentCard card){
-        if (countByUserId(card.getUser().getId()) >= User.MAX_CARDS){
-            throw new IllegalStateException("User already has " + User.MAX_CARDS + " cards");
+    default PaymentCard saveWithLimit(PaymentCard card) {
+        if (countByUserId(card.getUser().getId()) >= User.MAX_CARDS) {
+            throw new CardLimitExceededException("User already has " + User.MAX_CARDS + " cards");
         }
         return save(card);
     }
