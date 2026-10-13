@@ -2,10 +2,10 @@ package com.inno.userservice.service;
 
 import com.inno.userservice.dto.UserDto;
 import com.inno.userservice.entity.User;
+import com.inno.userservice.exception.NotFoundException;
 import com.inno.userservice.mapper.UserMapper;
 import com.inno.userservice.repository.UserRepository;
 import com.inno.userservice.specification.UserSpecification;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +27,7 @@ public class UserService {
 
     public UserDto getById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found: " + id));
+                .orElseThrow(() -> new NotFoundException("User not found: " + id));
 
         return userMapper.toDto(user);
     }
@@ -44,7 +44,7 @@ public class UserService {
                 userDto.getSurname(), userDto.getBirthDate(), userDto.getEmail());
 
         if (updated == 0) {
-            throw new EntityNotFoundException("User not found: " + id);
+            throw new NotFoundException("User not found: " + id);
         }
 
         return getById(id);
@@ -53,7 +53,7 @@ public class UserService {
     @Transactional
     public void delete(Long id) {
         if (!userRepository.existsById(id)) {
-            throw new EntityNotFoundException("User not found: " + id);
+            throw new NotFoundException("User not found: " + id);
         }
 
         userRepository.deleteById(id);
@@ -62,14 +62,14 @@ public class UserService {
     @Transactional
     public void activate(Long id) {
         if (userRepository.updateActiveById(id, true) == 0) {
-            throw new EntityNotFoundException("User not found: " + id);
+            throw new NotFoundException("User not found: " + id);
         }
     }
 
     @Transactional
     public void deactivate(Long id) {
         if (userRepository.updateActiveById(id, false) == 0) {
-            throw new EntityNotFoundException("User not found: " + id);
+            throw new NotFoundException("User not found: " + id);
         }
     }
 }

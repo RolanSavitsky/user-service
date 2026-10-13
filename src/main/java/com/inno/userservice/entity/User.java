@@ -1,5 +1,6 @@
 package com.inno.userservice.entity;
 
+import com.inno.userservice.exception.CardLimitExceededException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,7 +43,7 @@ public class User extends BaseEntity {
 
     public void addCard(PaymentCard card){
         if (cards.size() >= MAX_CARDS){
-            throw new IllegalStateException("User already has " + MAX_CARDS + " cards");
+            throw new CardLimitExceededException("User already has " + MAX_CARDS + " cards");
         }
         cards.add(card);
         card.setUser(this);
