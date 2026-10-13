@@ -1,6 +1,7 @@
 package com.inno.userservice.controller;
 
 import com.inno.userservice.dto.PaymentCardDto;
+import com.inno.userservice.dto.UserDto;
 import com.inno.userservice.service.PaymentCardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,12 @@ public class PaymentCardController {
     @PutMapping("/{id}")
     public ResponseEntity<PaymentCardDto> update(@PathVariable Long id, @Valid @RequestBody PaymentCardDto paymentCardDto) {
         return ResponseEntity.ok(paymentCardService.update(id, paymentCardDto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<PaymentCardDto> delete(@PathVariable Long id) {
+        paymentCardService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/activate")
