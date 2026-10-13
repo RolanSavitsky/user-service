@@ -67,6 +67,15 @@ public class PaymentCardService {
     }
 
     @Transactional
+    public void delete(Long id) {
+        if (!paymentCardRepository.existsById(id)) {
+            throw new EntityNotFoundException("Payment card not found: " + id);
+        }
+
+        paymentCardRepository.deleteById(id);
+    }
+
+    @Transactional
     public void activate(Long id) {
         if (paymentCardRepository.updateActiveById(id, true) == 0) {
             throw new EntityNotFoundException("Payment card not found: " + id);
