@@ -1,7 +1,6 @@
 package com.inno.userservice.controller;
 
 import com.inno.userservice.dto.PaymentCardDto;
-import com.inno.userservice.dto.UserDto;
 import com.inno.userservice.service.PaymentCardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +49,7 @@ public class PaymentCardController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<PaymentCardDto> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         paymentCardService.delete(id);
         return ResponseEntity.noContent().build();
     }
