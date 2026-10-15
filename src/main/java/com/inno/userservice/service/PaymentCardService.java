@@ -9,6 +9,9 @@ import com.inno.userservice.repository.PaymentCardRepository;
 import com.inno.userservice.repository.UserRepository;
 import com.inno.userservice.specification.PaymentCardSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -34,6 +37,7 @@ public class PaymentCardService {
         return paymentCardMapper.toDto(saved);
     }
 
+    @Cacheable(value = "cards", key = "#id")
     public PaymentCardDto getById(Long id) {
         PaymentCard paymentCard = paymentCardRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Payment card not found: " + id));
@@ -54,6 +58,7 @@ public class PaymentCardService {
                 .toList();
     }
 
+    @CachePut(value = "cards", key = "#id")
     @Transactional
     public PaymentCardDto update(Long id, PaymentCardDto paymentCardDto) {
         int updated = paymentCardRepository.updateById(id, paymentCardDto.getNumber(),
@@ -63,9 +68,13 @@ public class PaymentCardService {
             throw new NotFoundException("Payment card not found: " + id);
         }
 
-        return getById(id);
+        PaymentCard paymentCard = paymentCardRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Payment card not found: " + id));
+
+        return paymentCardMapper.toDto(paymentCard);
     }
 
+    @CacheEvict(value = "cards", key = "#id")
     @Transactional
     public void delete(Long id) {
         if (!paymentCardRepository.existsById(id)) {
@@ -75,6 +84,7 @@ public class PaymentCardService {
         paymentCardRepository.deleteById(id);
     }
 
+    @CacheEvict(value = "cards", key = "#id")
     @Transactional
     public void activate(Long id) {
         if (paymentCardRepository.updateActiveById(id, true) == 0) {
@@ -82,6 +92,7 @@ public class PaymentCardService {
         }
     }
 
+    @CacheEvict(value = "cards", key = "#id")
     @Transactional
     public void deactivate(Long id) {
         if (paymentCardRepository.updateActiveById(id, false) == 0) {
