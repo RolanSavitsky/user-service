@@ -1,5 +1,7 @@
 package com.inno.userservice.exception;
 
+import com.inno.userservice.security.SecurityErrorWriter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
@@ -85,5 +89,10 @@ public class GlobalExceptionHandler {
                 message.toString()
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public void handleAccessDenied(HttpServletResponse response) throws IOException {
+        SecurityErrorWriter.write(response, 403, "Forbidden", "Access denied");
     }
 }

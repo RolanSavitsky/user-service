@@ -11,10 +11,14 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface PaymentCardRepository extends JpaRepository<PaymentCard, Long>, JpaSpecificationExecutor<PaymentCard> {
 
     long countByUserId(Long UserId);
+
+    @Query("select card.user.id from PaymentCard card where card.id = :id")
+    Optional<Long> findOwnerIdById(@Param("id") Long id);
 
     default PaymentCard saveWithLimit(PaymentCard card) {
         if (countByUserId(card.getUser().getId()) >= User.MAX_CARDS) {
