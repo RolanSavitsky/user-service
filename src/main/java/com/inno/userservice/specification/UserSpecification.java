@@ -1,9 +1,8 @@
 package com.inno.userservice.specification;
 
 import com.inno.userservice.entity.User;
-import org.springframework.data.jpa.domain.Specification;
-
 import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.jpa.domain.Specification;
 
 public class UserSpecification {
 
