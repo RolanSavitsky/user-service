@@ -50,6 +50,13 @@ public class UserService {
                 .map(userMapper::toDto);
     }
 
+    public UserDto getByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        return userMapper.toDto(user);
+    }
+
     @CachePut(value = "users", key = "#id")
     @Transactional
     public UserDto update(Long id, UserDto userDto) {
