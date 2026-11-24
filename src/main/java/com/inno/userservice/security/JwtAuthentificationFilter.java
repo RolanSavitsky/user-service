@@ -47,16 +47,10 @@ public class JwtAuthentificationFilter extends OncePerRequestFilter {
                                     null,
                                     List.of(new SimpleGrantedAuthority("ROLE_" + role)));
 
-                    System.out.println(
-                            "JWT authenticated: userId=" + userId + ", role=" + role
-                    );
-
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
 
             } catch (JwtException e) {
-                System.err.println("JWT error: " + e.getClass().getSimpleName()
-                        + ": " + e.getMessage());
                 SecurityContextHolder.clearContext();
             }
         }

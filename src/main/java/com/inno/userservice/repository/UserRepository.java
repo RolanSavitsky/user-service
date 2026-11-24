@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 
@@ -27,4 +28,6 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @Modifying
     @Query("UPDATE User user SET user.active = :active, user.updatedAt = CURRENT_TIMESTAMP WHERE user.id = :id")
     int updateActiveById(@Param("id") Long id, @Param("active") boolean active);
+
+    Optional<User> findByEmail(String email);
 }
