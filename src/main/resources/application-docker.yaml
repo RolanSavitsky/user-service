@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://postgres:5432/${DB_NAME}
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   data:
@@ -10,3 +10,6 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET}
+
+internal:
+  api-key: ${INTERNAL_API_KEY}
