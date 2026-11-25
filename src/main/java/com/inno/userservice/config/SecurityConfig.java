@@ -1,10 +1,12 @@
 package com.inno.userservice.config;
 
+import com.inno.userservice.security.InternalApiKeyFilter;
 import com.inno.userservice.security.JwtAuthentificationFilter;
 import com.inno.userservice.security.JwtService;
 import com.inno.userservice.security.RestAccessDeniedHandler;
 import com.inno.userservice.security.RestAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -25,7 +27,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    RestAuthenticationEntryPoint entryPoint,
-                                                   RestAccessDeniedHandler accessDeniedHandler) throws Exception {
+                                                   RestAccessDeniedHandler accessDeniedHandler,
+                                                   @Value("${internal.api-key}") String internalKey) throws Exception {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -35,15 +38,19 @@ public class SecurityConfig {
                         .accessDeniedHandler(accessDeniedHandler))
                 .authorizeHttpRequests(auth -> auth
 
+                        .requestMatchers("/internal/**").hasRole("INTERNAL")
+
                         .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/users").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/users/*").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/users/*/activate", "/users/*/deactivate").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/cards").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/cards/*/activate", "/cards/*/deactivate").hasRole("ADMIN")
+                        .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated())
 
-                .addFilterBefore(new JwtAuthentificationFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthentificationFilter(jwtService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new InternalApiKeyFilter(internalKey), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
